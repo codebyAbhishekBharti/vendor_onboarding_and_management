@@ -17,21 +17,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        try {
-            User user_data = userService.createUser(user);
-            if(user_data!=null){
-                return new ResponseEntity<>(user_data, HttpStatus.CREATED);
-            }
-            else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
         try{

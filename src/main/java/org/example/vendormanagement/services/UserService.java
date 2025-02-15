@@ -4,6 +4,8 @@ import org.bson.types.ObjectId;
 import org.example.vendormanagement.entity.User;
 import org.example.vendormanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +15,12 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public User createUser(User user) {
         try{
             user.setId(ObjectId.get());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         catch (Exception e){
             System.out.println(e);

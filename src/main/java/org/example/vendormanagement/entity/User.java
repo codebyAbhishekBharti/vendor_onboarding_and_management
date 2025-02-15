@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Set;
+
 @Document(collection = "users")
 @Data
 @AllArgsConstructor
@@ -25,13 +27,6 @@ public class User {
     private String password;
     private String vendorId; //links the user to a vendor
     private String roleId; //references a role
+    private Set<String> roles;
 
-
-    public User(String name, String email, String password, String vendorId, String roleId) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.vendorId = vendorId;
-        this.roleId = roleId;
-    }
 }
