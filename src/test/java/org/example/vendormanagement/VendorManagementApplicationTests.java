@@ -1,10 +1,10 @@
-package org.example.vendoronboardingandmanagement;
+package org.example.vendormanagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class VendorOnboardingAndManagementApplicationTests {
+class VendorManagementApplicationTests {
 
     @Test
     void contextLoads() {

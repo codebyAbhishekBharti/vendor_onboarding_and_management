@@ -1,4 +1,4 @@
-package org.example.vendoronboardingandmanagement;
+package org.example.vendormanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
