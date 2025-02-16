@@ -5,6 +5,8 @@ import org.example.vendormanagement.entity.User;
 import org.example.vendormanagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,7 +57,24 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    //add permission override
+    //add permission overide from any super vendor to any sub vendor
+    @PutMapping("/permission/add")
+    public ResponseEntity<?> dfsPermissionOverrideAdd(@RequestParam String targetEmail, @RequestParam String permission, @RequestParam Boolean value) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = authentication.getName();
+        User user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, value, "add");
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/permission/remove")
+    public ResponseEntity<?> dfsPermissionOverrideRemove(@RequestParam String targetEmail, @RequestParam String permission, @RequestParam Boolean value) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = authentication.getName();
+        User user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, value, "remove");
+        return ResponseEntity.ok(user);
+    }
+
+    //add permission override for particular user
     @PutMapping("/{id}/permissions/add")
     public ResponseEntity<?> addPermissionOverride(@PathVariable String id, @RequestParam String permission, @RequestParam Boolean value) {
         System.out.println("Hello");
@@ -64,7 +83,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    //remove permission override
+    //remove permission override for particular user
     @PutMapping("/{id}/permissions/remove")
     public ResponseEntity<?> removePermissionOverride(@PathVariable String id, @RequestParam String permission) {
         ObjectId Id = new ObjectId(id);

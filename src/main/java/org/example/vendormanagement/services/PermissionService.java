@@ -59,6 +59,9 @@ public class PermissionService {
 
     // Helper method to map request URIs to permission keys
     private String getPermissionKey(String requestURI, String method) {
+        if(requestURI.matches("/users/permission/[a-fA-F0-9]+$") && method.equals("PUT")){
+            return "canAssignRoles";
+        }
         if (requestURI.matches("^/users/[a-fA-F0-9]+$")) {
             return switch (method) {
                 case "GET" -> "canAddSubVendors";

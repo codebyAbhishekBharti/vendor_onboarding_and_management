@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Stack;
 
 /**
  * Service for managing users.
@@ -28,8 +29,11 @@ public class UserService {
     // Create a new user
     public User createUser(User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-        user.setVendorId(userName);
+        String email = authentication.getName();
+        User parent = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        parent.getSubVendorIds().add(user.getEmail());
+        userRepository.save(parent); // Save the updated parent user
+        user.setVendorId(email);
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Encrypt password
         return userRepository.save(user);
     }
@@ -62,6 +66,12 @@ public class UserService {
 
     // Delete user by ID
     public void deleteUser(ObjectId id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        User parent = userRepository.findByEmail(user.getVendorId())
+                .orElseThrow(() -> new RuntimeException("Parent user not found"));
+        parent.getSubVendorIds().remove(user.getEmail());
+        userRepository.save(parent); // Save the updated parent user
         userRepository.deleteById(id);
     }
 
@@ -90,6 +100,32 @@ public class UserService {
         return user;
     }
 
+
+    public User dfsPermissionOverride(String currentEmail, String email, String permission, Boolean value, String command) {
+        User currentUser = userRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("Current user not found"));
+
+        Stack<User> stack = new Stack<>();
+        stack.push(currentUser);
+
+        while (!stack.isEmpty()) {
+            User user = stack.pop();
+
+            if (user.getEmail().equals(email)) {
+                if(command=="add")
+                    return addPermissionOverride(user.getId(), permission, value);
+                else if(command=="remove")
+                    return removePermissionOverride(user.getId(), permission);
+            }
+
+            for (String subVendorId : user.getSubVendorIds()) {
+                User subVendor = userRepository.findByEmail(subVendorId)
+                        .orElseThrow(() -> new RuntimeException("Sub-vendor not found: " + subVendorId));
+                stack.push(subVendor);
+            }
+        }
+        throw new RuntimeException("User not found in hierarchy");
+    }
 
 
 }
