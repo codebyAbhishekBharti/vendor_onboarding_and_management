@@ -4,65 +4,71 @@ import org.bson.types.ObjectId;
 import org.example.vendormanagement.entity.User;
 import org.example.vendormanagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller for user-related operations.
+ */
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
     @Autowired
     private UserService userService;
 
+    // Register a new user
+    @PostMapping
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        User newUser = userService.createUser(user);
+        return ResponseEntity.ok(newUser);
+    }
+
+    // Get all users
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
-        try{
-            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    // Get user by ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable ObjectId id) {
-        try{
-            Optional<User> user = userService.getUserById(id);
-            if(user.isPresent()){
-                return new ResponseEntity<>(user.get(), HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<User> getUserById(@PathVariable ObjectId id) {
+        Optional<User> user = userService.getUserById(id);
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Update user details
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable ObjectId id, @RequestBody User user) {
-        try {
-            User user_data = userService.updateUser(id, user);
-            if(user_data!=null){
-                return new ResponseEntity<>(user_data, HttpStatus.CREATED);
-            }
-            else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<User> updateUser(@PathVariable ObjectId id, @RequestBody User updatedUser) {
+        User user = userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok(user);
     }
 
+    // Delete a user
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable ObjectId id) {
-        if(userService.deleteUser(id)){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Void> deleteUser(@PathVariable ObjectId id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //add permission override
+    @PutMapping("/{id}/permissions/add")
+    public ResponseEntity<?> addPermissionOverride(@PathVariable String id, @RequestParam String permission, @RequestParam Boolean value) {
+        System.out.println("Hello");
+        ObjectId Id = new ObjectId(id);
+        User user = userService.addPermissionOverride(Id, permission, value);
+        return ResponseEntity.ok(user);
+    }
+
+    //remove permission override
+    @PutMapping("/{id}/permissions/remove")
+    public ResponseEntity<?> removePermissionOverride(@PathVariable String id, @RequestParam String permission) {
+        ObjectId Id = new ObjectId(id);
+        User user = userService.removePermissionOverride(Id, permission);
+        return ResponseEntity.ok(user);
     }
 }

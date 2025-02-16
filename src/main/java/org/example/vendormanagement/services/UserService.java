@@ -4,75 +4,92 @@ import org.bson.types.ObjectId;
 import org.example.vendormanagement.entity.User;
 import org.example.vendormanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing users.
+ */
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
-    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+    // Create a new user
     public User createUser(User user) {
-        try{
-            user.setId(ObjectId.get());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-        catch (Exception e){
-            System.out.println(e);
-//            throw new RuntimeException("Error creating user");
-            return null;
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        user.setVendorId(userName);
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encrypt password
         return userRepository.save(user);
     }
 
+    // Get all users
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    // Get user by ID
     public Optional<User> getUserById(ObjectId id) {
         return userRepository.findById(id);
     }
 
+    // Update user details
     public User updateUser(ObjectId id, User updatedUser) {
-        if (userRepository.existsById(id)) {
-            User existingUser = userRepository.findById(id).get();
-
-            if (updatedUser.getName() == null || updatedUser.getName().isEmpty()) {
-                updatedUser.setName(existingUser.getName());
+        return userRepository.findById(id).map(user -> {
+            if (updatedUser.getName() != null) {
+                user.setName(updatedUser.getName());
             }
-
-            if (updatedUser.getEmail() == null || updatedUser.getEmail().isEmpty()) {
-                updatedUser.setEmail(existingUser.getEmail());
+            if (updatedUser.getEmail() != null) {
+                user.setEmail(updatedUser.getEmail());
             }
-
-            if (updatedUser.getPassword() == null || updatedUser.getPassword().isEmpty()) {
-                updatedUser.setPassword(existingUser.getPassword());
+            if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+                user.setRoles(updatedUser.getRoles());
             }
-
-            if (updatedUser.getVendorId() == null || updatedUser.getVendorId().isEmpty()) {
-                updatedUser.setVendorId(existingUser.getVendorId());
-            }
-
-            if (updatedUser.getRoleId() == null || updatedUser.getRoleId().isEmpty()) {
-                updatedUser.setRoleId(existingUser.getRoleId());
-            }
-
-            updatedUser.setId(id);
-            return userRepository.save(updatedUser);
-        }
-        return null;
+            return userRepository.save(user);
+        }).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public boolean deleteUser(ObjectId id) {
-        if (!userRepository.existsById(id)) {
-            return false;
-        }
+    // Delete user by ID
+    public void deleteUser(ObjectId id) {
         userRepository.deleteById(id);
-        return true;
     }
+
+    public User addPermissionOverride(ObjectId id, String permissionKey, boolean value) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Ensure map is initialized
+        if (user.getPermissionOverrides() == null) {
+            user.setPermissionOverrides(new HashMap<>());
+        }
+        // Add or update permission override
+        user.getPermissionOverrides().put(permissionKey, value);
+        // Save updated user
+        userRepository.save(user);
+        return user;
+    }
+
+    public User removePermissionOverride(ObjectId id, String permissionKey) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        //remove permission override if exists
+        if (user.getPermissionOverrides() != null) {
+            user.getPermissionOverrides().remove(permissionKey);
+            userRepository.save(user);
+        }
+        return user;
+    }
+
+
+
 }
