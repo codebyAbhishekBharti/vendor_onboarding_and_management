@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.example.vendormanagement.entity.User;
 import org.example.vendormanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -127,5 +128,29 @@ public class UserService {
         throw new RuntimeException("User not found in hierarchy");
     }
 
+    public ResponseEntity<?> dfsDeleteUser(String currentEmail, String email) {
+        User currentUser = userRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("Current user not found"));
+
+        Stack<User> stack = new Stack<>();
+        stack.push(currentUser);
+
+        while (!stack.isEmpty()) {
+            User user = stack.pop();
+
+            if (user.getEmail().equals(email)) {
+                User toDeleteUser = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                deleteUser(toDeleteUser.getId());
+            }
+
+            for (String subVendorId : user.getSubVendorIds()) {
+                User subVendor = userRepository.findByEmail(subVendorId)
+                        .orElseThrow(() -> new RuntimeException("Sub-vendor not found: " + subVendorId));
+                stack.push(subVendor);
+            }
+        }
+        throw new RuntimeException("User not found in hierarchy");
+    }
 
 }

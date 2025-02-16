@@ -67,11 +67,18 @@ public class UserController {
     }
 
     @PutMapping("/permission/remove")
-    public ResponseEntity<?> dfsPermissionOverrideRemove(@RequestParam String targetEmail, @RequestParam String permission, @RequestParam Boolean value) {
+    public ResponseEntity<?> dfsPermissionOverrideRemove(@RequestParam String targetEmail, @RequestParam String permission) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentEmail = authentication.getName();
-        User user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, value, "remove");
+        User user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, false, "remove");
         return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAllUsers(@RequestParam String emailToDelete) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = authentication.getName();
+        return userService.dfsDeleteUser(currentEmail, emailToDelete);
     }
 
     //add permission override for particular user
