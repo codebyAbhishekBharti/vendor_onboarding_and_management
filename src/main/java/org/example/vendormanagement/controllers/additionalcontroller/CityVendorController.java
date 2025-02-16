@@ -1,4 +1,4 @@
-package org.example.vendormanagement.controllers;
+package org.example.vendormanagement.controllers.additionalcontroller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
