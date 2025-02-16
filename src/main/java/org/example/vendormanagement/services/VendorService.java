@@ -31,9 +31,9 @@ public class VendorService {
             if (updatedVendor.getName() == null || updatedVendor.getName().isEmpty()) {
                 updatedVendor.setName(existingVendor.getName());
             }
-            if (updatedVendor.getType() == null || updatedVendor.getType().isEmpty()) {
-                updatedVendor.setType(existingVendor.getType());
-            }
+//            if (updatedVendor.getType() == null || updatedVendor.getType().isEmpty()) {
+//                updatedVendor.setType(existingVendor.getType());
+//            }
             updatedVendor.setId(id);
             return vendorRepository.save(updatedVendor);
         }

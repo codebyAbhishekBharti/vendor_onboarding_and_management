@@ -19,6 +19,8 @@ public class Vehicle {
     private String registrationNumber;
     @NonNull
     private String model;
-    private ObjectId assignedVendorId; // vendor managing this vehicle
-    private ObjectId assignedDriverId; // assigned Driver (if any)
+    private String type; // e.g., Truck, Car, Bike
+    private boolean isAvailable;
+    private ObjectId assignedVendorId; // Vendor managing this vehicle
+    private ObjectId assignedDriverId; // Driver assigned to the vehicle
 }
