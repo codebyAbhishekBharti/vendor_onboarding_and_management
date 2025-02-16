@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "drivers")
+@Document(collection = "drivers") // Specifies MongoDB collection name
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +24,6 @@ public class Driver {
     private String licenseNumber;
     private String phone;
     private boolean isActive;
-    private ObjectId assignedVendorId; // vendor managing this driver
-    private List<ObjectId> assignedVehicles = new ArrayList<>(); // vehicles assigned to the driver
+    private ObjectId assignedVendorId; // Vendor managing this driver
+    private List<ObjectId> assignedVehicles = new ArrayList<>(); // List of assigned vehicles
 }

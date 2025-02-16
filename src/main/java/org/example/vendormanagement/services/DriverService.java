@@ -1,4 +1,4 @@
-package org.example.vendormanagement.services;
+package org.example.vendormanagement.service;
 
 import org.bson.types.ObjectId;
 import org.example.vendormanagement.entity.Driver;
@@ -11,70 +11,40 @@ import java.util.Optional;
 
 @Service
 public class DriverService {
-
     @Autowired
     private DriverRepository driverRepository;
 
-    // Register Driver
-    public Driver registerDriver(Driver driver) {
+    // Create a new driver
+    public Driver addDriver(Driver driver) {
         return driverRepository.save(driver);
     }
 
-    // Get All Drivers
+    // Get all drivers
     public List<Driver> getAllDrivers() {
         return driverRepository.findAll();
     }
 
-    // Get Driver by ID
+    // Get driver by ID
     public Optional<Driver> getDriverById(ObjectId id) {
         return driverRepository.findById(id);
     }
 
-    // Update Driver Details
+    // Get drivers assigned to a vendor
+    public List<Driver> getDriversByVendor(ObjectId vendorId) {
+        return driverRepository.findByAssignedVendorId(vendorId);
+    }
+
+    // Update driver details
     public Driver updateDriver(ObjectId id, Driver updatedDriver) {
-        return driverRepository.findById(id).map(driver -> {
-            driver.setName(updatedDriver.getName());
-            driver.setLicenseNumber(updatedDriver.getLicenseNumber());
-            driver.setPhone(updatedDriver.getPhone());
-            driver.setActive(updatedDriver.isActive());
-            return driverRepository.save(driver);
-        }).orElseThrow(() -> new RuntimeException("Driver not found"));
+        if (driverRepository.existsById(id)) {
+            updatedDriver.setId(id);
+            return driverRepository.save(updatedDriver);
+        }
+        throw new RuntimeException("Driver not found");
     }
 
-    // Assign a Vendor to a Driver
-    public Driver assignVendorToDriver(ObjectId driverId, ObjectId vendorId) {
-        return driverRepository.findById(driverId).map(driver -> {
-            driver.setAssignedVendorId(vendorId);
-            return driverRepository.save(driver);
-        }).orElseThrow(() -> new RuntimeException("Driver not found"));
-    }
-
-    // Assign a Vehicle to a Driver
-    public Driver assignVehicleToDriver(ObjectId driverId, ObjectId vehicleId) {
-        return driverRepository.findById(driverId).map(driver -> {
-            driver.getAssignedVehicles().add(vehicleId);
-            return driverRepository.save(driver);
-        }).orElseThrow(() -> new RuntimeException("Driver not found"));
-    }
-
-    // Remove a Vehicle from a Driver
-    public Driver removeVehicleFromDriver(ObjectId driverId, ObjectId vehicleId) {
-        return driverRepository.findById(driverId).map(driver -> {
-            driver.getAssignedVehicles().remove(vehicleId);
-            return driverRepository.save(driver);
-        }).orElseThrow(() -> new RuntimeException("Driver not found"));
-    }
-
-    // Delete a Driver
+    // Delete driver
     public void deleteDriver(ObjectId id) {
         driverRepository.deleteById(id);
-    }
-
-    // Change Driver Status (Active/Inactive)
-    public Driver changeDriverStatus(ObjectId id, boolean status) {
-        return driverRepository.findById(id).map(driver -> {
-            driver.setActive(status);
-            return driverRepository.save(driver);
-        }).orElseThrow(() -> new RuntimeException("Driver not found"));
     }
 }
