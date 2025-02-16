@@ -8,25 +8,27 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
+import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Represents a user in the vendor management system.
+ */
 @Document(collection = "users")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     private ObjectId id;
     @NonNull
     private String name;
-    @NonNull
     @Indexed(unique = true)
+    @NonNull
     private String email;
     @NonNull
     private String password;
-    private String vendorId; //links the user to a vendor
-    private String roleId; //references a role
-    private Set<String> roles;
-
+    private String vendorId;
+    private Set<String> roles = new HashSet<>(); // ["SUPER_VENDOR", "REGIONAL_VENDOR"]
+    private ObjectId delegationId; // delegation received by this user
 }

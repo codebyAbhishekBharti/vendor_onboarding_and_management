@@ -3,23 +3,25 @@ package org.example.vendormanagement.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.util.List;
+import java.util.Map;
 
+/**
+ * Represents a role in the vendor management system.
+ */
 @Document(collection = "roles")
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Role {
     @Id
     private ObjectId id;
-    private String name; //"SuperVendor", "VendorManager", "Driver"
-    private List<String> permissions; //["CAN_ADD_DRIVERS", "CAN_MANAGE_VEHICLES"]
-
-    public Role(String name, List<String> permissions) {
-        this.name = name;
-        this.permissions = permissions;
-    }
-
+    @Indexed(unique = true)
+    @NonNull
+    private String name; // "SUPER_VENDOR", "REGIONAL_VENDOR", "DRIVER"
+    private Map<String, Boolean> permissions; // {"manageDrivers": true, "approveVendor": false}
 }
