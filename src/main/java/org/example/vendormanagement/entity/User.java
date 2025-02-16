@@ -9,10 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a user in the vendor management system.
@@ -36,4 +33,5 @@ public class User {
     private ObjectId delegationId; // delegation received by this user
     // user specific permission overrides (e.g., {"canManageBooking": false})
     private Map<String, Boolean> permissionOverrides = new HashMap<>();
+    private List<String> subVendorIds = new ArrayList<>();
 }
