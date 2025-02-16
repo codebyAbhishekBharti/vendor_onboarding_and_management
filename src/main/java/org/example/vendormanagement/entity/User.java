@@ -8,7 +8,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -31,4 +34,6 @@ public class User {
     private String vendorId;
     private Set<String> roles = new HashSet<>(); // ["SUPER_VENDOR", "REGIONAL_VENDOR"]
     private ObjectId delegationId; // delegation received by this user
+    // user specific permission overrides (e.g., {"canManageBooking": false})
+    private Map<String, Boolean> permissionOverrides = new HashMap<>();
 }
