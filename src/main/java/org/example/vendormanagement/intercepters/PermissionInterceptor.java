@@ -1,5 +1,6 @@
 package org.example.vendormanagement.intercepters;
 
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.vendormanagement.services.PermissionService;
@@ -28,9 +29,11 @@ public class PermissionInterceptor implements HandlerInterceptor {
         }
 
         String email = userDetails.getUsername();
+        String method = request.getMethod();
+        System.out.println(method);
 
         // Check if user has permission for this request
-        if (!permissionService.hasPermission(email, request.getRequestURI())) {
+        if (!permissionService.hasPermission(email, request.getRequestURI(), method)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
             return false;
         }
