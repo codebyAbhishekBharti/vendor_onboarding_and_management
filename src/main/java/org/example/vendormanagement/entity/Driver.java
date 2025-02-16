@@ -22,6 +22,8 @@ public class Driver {
     private String name;
     @NonNull
     private String licenseNumber;
+    private String phone;
+    private boolean isActive;
     private ObjectId assignedVendorId; // vendor managing this driver
     private List<ObjectId> assignedVehicles = new ArrayList<>(); // vehicles assigned to the driver
 }
