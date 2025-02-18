@@ -102,7 +102,7 @@ public class UserService {
     }
 
 
-    public User dfsPermissionOverride(String currentEmail, String email, String permission, Boolean value, String command) {
+    public ResponseEntity<?> dfsPermissionOverride(String currentEmail, String email, String permission, Boolean value, String command) {
         User currentUser = userRepository.findByEmail(currentEmail)
                 .orElseThrow(() -> new RuntimeException("Current user not found"));
 
@@ -113,10 +113,10 @@ public class UserService {
             User user = stack.pop();
 
             if (user.getEmail().equals(email)) {
-                if(command=="add")
-                    return addPermissionOverride(user.getId(), permission, value);
-                else if(command=="remove")
-                    return removePermissionOverride(user.getId(), permission);
+                if ("add".equals(command))
+                    return ResponseEntity.ok(addPermissionOverride(user.getId(), permission, value));
+                else if ("remove".equals(command))
+                    return ResponseEntity.ok(removePermissionOverride(user.getId(), permission));
             }
 
             for (String subVendorId : user.getSubVendorIds()) {
@@ -125,7 +125,7 @@ public class UserService {
                 stack.push(subVendor);
             }
         }
-        throw new RuntimeException("User not found in hierarchy");
+        throw new RuntimeException("User not found");
     }
 
     public ResponseEntity<?> dfsDeleteUser(String currentEmail, String email) {

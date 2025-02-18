@@ -62,7 +62,7 @@ public class UserController {
     public ResponseEntity<?> dfsPermissionOverrideAdd(@RequestParam String targetEmail, @RequestParam String permission, @RequestParam Boolean value) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentEmail = authentication.getName();
-        User user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, value, "add");
+        ResponseEntity<?> user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, value, "add");
         return ResponseEntity.ok(user);
     }
 
@@ -70,7 +70,7 @@ public class UserController {
     public ResponseEntity<?> dfsPermissionOverrideRemove(@RequestParam String targetEmail, @RequestParam String permission) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentEmail = authentication.getName();
-        User user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, false, "remove");
+        ResponseEntity<?> user = userService.dfsPermissionOverride(currentEmail,targetEmail, permission, false, "remove");
         return ResponseEntity.ok(user);
     }
 
