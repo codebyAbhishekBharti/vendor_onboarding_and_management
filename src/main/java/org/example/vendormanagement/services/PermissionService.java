@@ -58,21 +58,54 @@ public class PermissionService {
     }
 
     // Helper method to map request URIs to permission keys
+//    private String getPermissionKey(String requestURI, String method) {
+//        if(requestURI.matches("/users/permission/(add|remove)$") && method.equals("PUT")){
+//            return "canAssignRoles";
+//        }
+//        else if (requestURI.matches("^/users/[a-zA-Z0-9]+$")) {
+//            return switch (method) {
+//                case "GET" -> "canAddSubVendors";
+//                case "PUT" -> "canEditUser";
+//                case "DELETE" -> "canDeleteUser";
+//                default -> "";
+//            };
+//        }
+//        return switch (requestURI) {
+//            case "/users" -> "canAddSubVendors";
+//            default -> "";
+//        };
+//    }
     private String getPermissionKey(String requestURI, String method) {
-        if(requestURI.matches("/users/permission/[a-fA-F0-9]+$") && method.equals("PUT")){
+        System.out.println(requestURI);
+        System.out.println(method);
+        if ((requestURI.startsWith("users/permission/add") || requestURI.startsWith("users/permission/remove")) && method.equals("PUT")) {
             return "canAssignRoles";
         }
-        if (requestURI.matches("^/users/[a-fA-F0-9]+$")) {
+        if (requestURI.startsWith("/users/delete") && method.equals("DELETE")) {
+            return "canDeleteUser";
+        }
+        if (requestURI.startsWith("/users/permission/add") && method.equals("PUT")) {
+            return "canAssignRoles";
+        }
+        if (requestURI.startsWith("^/users/permission/remove") && method.equals("PUT")) {
+            return "canRemoveRoles";
+        }
+        if (requestURI.matches("/users/*/permissions/add*") && method.equals("PUT")) {
+            return "canEditUserPermissions";
+        }
+        if (requestURI.matches("^/users/*/permissions/remove*") && method.equals("PUT")) {
+            return "canEditUserPermissions";
+        }
+        if (requestURI.startsWith("/users")) {  // Matches MongoDB ObjectId
             return switch (method) {
-                case "GET" -> "canAddSubVendors";
+                case "GET" -> "canViewUser";
+                case "POST" -> "canAddSubVendors";
                 case "PUT" -> "canEditUser";
                 case "DELETE" -> "canDeleteUser";
                 default -> "";
             };
         }
-        return switch (requestURI) {
-            case "/users" -> "canAddSubVendors";
-            default -> "";
-        };
+        return "";
     }
+
 }
