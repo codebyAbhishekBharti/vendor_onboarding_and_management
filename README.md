@@ -1,25 +1,37 @@
 # Vendor, Driver, and Vehicle Onboarding & Management System
 
 ## 🚀 Overview
-This project is a **backend system** built using **Spring Boot** and **MongoDB** for managing vendors, drivers, vehicles, and document uploads. It provides RESTful APIs for onboarding and managing these entities efficiently.
+This project is a **backend system** built using **Spring Boot** and **MongoDB** for managing vendors, drivers, vehicles, and document uploads. It provides RESTful APIs for onboarding and managing these entities efficiently, supporting multi-level hierarchy and role-based access control (RBAC).
 
 ---
 
-## 📌 Features
-### ✅ Vendor Management
-- Add, update, delete, and retrieve vendors.
+## ✨ Features
 
-### ✅ Driver Management
-- Register and manage drivers associated with vendors.
-- Upload driver documents (License, Insurance, etc.).
+### 🏢 Multi-level Hierarchy Support  
+- Vendors can create and manage sub-vendors with inherited permissions.  
+- Ensures structured vendor relationships and delegation of responsibilities.  
 
-### ✅ Vehicle Management
-- Assign vehicles to drivers.
-- Store and update vehicle details.
+### 🔐 Role-based Access Control (RBAC)  
+- API requests pass through middleware to validate user permissions.  
+- Fine-grained access control ensures security and proper authorization.  
 
-### ✅ Document Upload
-- Upload and retrieve driver/vendor documents.
-- Store documents in a local directory (or cloud storage like AWS S3).
+### 🚀 Vendor Onboarding & Management  
+- Register, update, and remove vendor accounts seamlessly.  
+- Assign and manage permissions for vendors and sub-vendors.  
+
+### 🚖 Driver Onboarding & Management  
+- Add, update, and manage driver profiles with assigned vendors.  
+- Track driver activity and ensure compliance with vendor policies.  
+
+### 🚚 Vehicle Onboarding & Management  
+- Register and manage vehicles, linking them with assigned drivers.  
+- Maintain vehicle status, availability, and operational history.  
+
+### ✅ Document Upload  
+- Upload and retrieve important documents for vendors and drivers.  
+- Store documents securely in a local directory or cloud storage (e.g., AWS S3).  
+
+
 
 ---
 
@@ -104,11 +116,6 @@ Content-Type: multipart/form-data
 - **Spring Security** is integrated for authentication.
 - JWT-based authentication can be added for securing API endpoints.
 
-
----
-
-## 📝 License
-This project is licensed under the **MIT License**.
 
 ---
 
